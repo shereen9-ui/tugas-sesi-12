@@ -1,0 +1,159 @@
+
+<div class="table-container">
+
+  <h2>Employee Management</h2>
+  <p>Manage employee data using bulk actions.</p>
+
+  <div class="search-container">
+
+    <label for="employee-search">Cari Nama Karyawan</label>
+
+    <input
+      id="employee-search"
+      type="text"
+      placeholder="Ketik nama karyawan..."
+      [value]="searchTerm"
+      (input)="onSearchChange($event)"
+      (focus)="showSuggestions = true"
+      autocomplete="off">
+
+    @if (showSuggestions && suggestions.length > 0) {
+      <div class="suggestions">
+
+        @for (employee of suggestions; track employee.id) {
+          <button
+            type="button"
+            class="suggestion-item"
+            (click)="selectSuggestion(employee.name)">
+            <strong>{{ employee.name }}</strong>
+            <span>{{ employee.position }}</span>
+          </button>
+        }
+
+      </div>
+    }
+
+    @if (searchTerm.trim().length > 0) {
+      <button
+        type="button"
+        class="clear-btn"
+        (click)="clearSearch()">
+        Hapus Pencarian
+      </button>
+    }
+
+  </div>
+
+  <div class="toolbar">
+
+    <span>{{ selectedCount }} data dipilih</span>
+
+    <div class="actions">
+
+      <button
+        class="edit-btn"
+        [disabled]="selectedCount === 0"
+        (click)="bulkEdit()">
+        Bulk Edit
+      </button>
+
+      <button
+        class="delete-btn"
+        [disabled]="selectedCount === 0"
+        (click)="bulkDelete()">
+        Bulk Delete
+      </button>
+
+    </div>
+
+  </div>
+
+  <table>
+
+    <thead>
+      <tr>
+
+        <th>
+          <input
+            type="checkbox"
+            [checked]="allSelected"
+            (change)="toggleAll($event)">
+        </th>
+
+        <th>ID</th>
+        <th>Nama</th>
+        <th>Posisi</th>
+        <th>Status</th>
+
+      </tr>
+    </thead>
+
+    <tbody>
+
+      @for (employee of pageEmployees; track employee.id) {
+        <tr>
+
+          <td>
+            <input
+              type="checkbox"
+              [checked]="selectedIds.includes(employee.id)"
+              (change)="toggleRow(employee.id, $event)">
+          </td>
+
+          <td>{{ employee.id }}</td>
+          <td>{{ employee.name }}</td>
+          <td>{{ employee.position }}</td>
+
+          <td>
+            <span
+              class="status"
+              [class.active]="employee.status === 'Aktif'">
+              {{ employee.status }}
+            </span>
+          </td>
+
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="5" class="empty">
+            Data karyawan tidak ditemukan.
+          </td>
+        </tr>
+      }
+
+    </tbody>
+
+  </table>
+
+  <div class="pagination">
+
+    <button
+      class="page-btn"
+      [disabled]="currentPage === 1"
+      (click)="previousPage()">
+      Previous
+    </button>
+
+    @for (page of pageNumbers; track page) {
+      <button
+        class="page-number"
+        [class.current]="currentPage === page"
+        (click)="changePage(page)">
+        {{ page }}
+      </button>
+    }
+
+    <button
+      class="page-btn"
+      [disabled]="currentPage === totalPages"
+      (click)="nextPage()">
+      Next
+    </button>
+
+  </div>
+
+  <p class="page-info">
+    Halaman {{ currentPage }} dari {{ totalPages }}
+  </p>
+
+</div>
